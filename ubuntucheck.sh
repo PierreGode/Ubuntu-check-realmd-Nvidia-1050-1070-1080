@@ -13,6 +13,12 @@ echo ""
     END=$(echo "\033[0m")
 # ~~~~~~~~~~  Environment Setup ~~~~~~~~~~ #
 echo ""
+echo "${MENU}"Checking kernel information"${END}"
+echo ""
+hostnamectl status
+echo ""
+echo "___________________________________________________________________"
+echo ""
 echo "${MENU}"Checking network"${END}"
 ifconfig | awk '{print $2}' | grep addr | head -1
 speed=$( ping -q -w 1 -c 1 `ip r | grep default | cut -d ' ' -f 3` | grep max | awk '{print$4}' | cut -d '/' -f1)
@@ -20,18 +26,22 @@ echo "$speed ms"
 ping -q -w 1 -c 1 `ip r | grep default | cut -d ' ' -f 3` > /dev/null && echo "Network is working" || echo "NO NETWORK"
 echo ""
 echo ""
-echo "${MENU}"Checking disk space"${END}"
+echo "${MENU}"Checking disk space of disks"${END}"
 echo ""
 disk=$( df -Pm | awk '+$5 >=60  {print $1 " - " $5}' )
 space=$( df -Pm | awk '+$5 >=60  {print $5}' | cut -d '%' -f1 )
+totaldisk=$( df -h | awk '+$5 >=60  {print $1 " - " $2}' | cut -d '-' -f3 )
 if [ $space > 60 ]
 then
-echo "I detected a space that seems to be getting full= $disk"
+echo "I detected a space that seems to be getting full= $disk used of"$totaldisk""
 echo ""
 echo "trying to find large logs...."
 echo ""
-find / -name "*.log" -type f -size +20M -exec ls -lh {} \; 2> /dev/null | awk '{ print $NF ": " $5 }' | sort -nrk 2,2
+find / -name "*.log" -type f -size +200M -exec ls -lh {} \; 2> /dev/null | awk '{ print $NF ": " $5 }' | sort -nrk 2,2
 echo ""
+echo "trying to find large files...."
+echo ""
+find / -name "*" -type f -size +300M -exec ls -lh {} \; 2> /dev/null | awk '{ print $NF ": " $5 }' | sort -nrk 2,2
 echo "___________________________________________________________________"
 else
 echo "${MENU}"Disk space looks good"${END}"
@@ -42,6 +52,7 @@ echo ""
 echo ""
 echo "${MENU}"Checking realm setup"${END}"
 echo ""
+sudo service sssd restart
 export HOSTNAME
 myhost=$( hostname )
 grouPs=$( echo null )
@@ -61,9 +72,10 @@ else
 echo checking sudoers file..  "${RED_TEXT}"FAIL"${END}"
 fi
 grouPs=$(cat /etc/sudoers.d/sudoers | grep -i $myhost | cut -d '%' -f2 | cut -d  '=' -f1 | sed -e 's/\<ALL\>//g')
+solocal=$( cat /etc/sudoers.d/sudoers | grep -i $myhost | awk '{ print $1}' )
 if [ $grouPs = "$myhost""sudoers" ]
 then
-echo Checking sudoers users.. "${INTRO_TEXT}"OK"${END}"
+echo "Checking group $solocal "${INTRO_TEXT}"OK"${END}""
 else
 echo Checking sudoers users.. "${RED_TEXT}"FAIL"${END}"
 fi
@@ -94,7 +106,7 @@ then
 if [ $ver = "375.20" ]
 then
 echo "Detected NVIDIA 1050"
-echo "${INTRO_TEXT}"Correct Nvidia version '(' $ver ')' already installed.."${END}"
+echo "${INTRO_TEXT}"Correct Nvidia driver version '(' $ver ')' already installed.."${END}"
 echo ""
 exit
 else
@@ -120,13 +132,13 @@ then
 if [ $ver = "367.27" ]
 then
 echo "Detected NVIDIA 1070"
-echo "${INTRO_TEXT}"Correct Nvidia version '(' $ver ')' already installed.."${END}"
+echo "${INTRO_TEXT}"Correct Nvidia driver version '(' $ver ')' already installed.."${END}"
 echo ""
 exit
 else
 echo "Driver for NVIDIA $ver is not installed but i detected a NVIDIA 1070 Hardware"
 echo ""
-echo "Installing driver.. Hold on"
+echo "${MENU}"Installing driver.. Hold on"${END}"
 echo ""
 sleep 2
 sudo service lightdm stop
