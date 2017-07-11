@@ -13,26 +13,34 @@ echo ""
     END=$(echo "\033[0m")
 # ~~~~~~~~~~  Environment Setup ~~~~~~~~~~ #
 echo ""
-sudo echo "Starting checking disk space"
+echo "${MENU}"Checking network"${END}"
+ifconfig | awk '{print $2}' | grep addr | head -1
+speed=$( ping -q -w 1 -c 1 `ip r | grep default | cut -d ' ' -f 3` | grep max | awk '{print$4}' | cut -d '/' -f1)
+echo "$speed ms"
+ping -q -w 1 -c 1 `ip r | grep default | cut -d ' ' -f 3` > /dev/null && echo "Network is working" || echo "NO NETWORK"
+echo ""
+echo ""
+echo "${MENU}"Checking disk space"${END}"
 echo ""
 disk=$( df -Pm | awk '+$5 >=60  {print $1 " - " $5}' )
 space=$( df -Pm | awk '+$5 >=60  {print $5}' | cut -d '%' -f1 )
 if [ $space > 60 ]
 then
-echo "I detected a space that seems pretty full= $disk"
+echo "I detected a space that seems to be getting full= $disk"
 echo ""
 echo "trying to find large logs...."
 echo ""
 find / -name "*.log" -type f -size +20M -exec ls -lh {} \; 2> /dev/null | awk '{ print $NF ": " $5 }' | sort -nrk 2,2
 echo ""
-echo "_______________________________________"
+echo "___________________________________________________________________"
 else
+echo "${MENU}"Disk space looks good"${END}"
 echo ""
-echo "Disks looks good"
+echo "___________________________________________________________________"
 fi
 echo ""
 echo ""
-echo "Controlling realm setup"
+echo "${MENU}"Checking realm setup"${END}"
 echo ""
 export HOSTNAME
 myhost=$( hostname )
@@ -74,9 +82,9 @@ echo Checking PAM auth configuration.. "${INTRO_TEXT}"OK"${END}"
 else
 echo Checking PAM auth configuration.. "${RED_TEXT}"FAIL"${END}"
 fi
-echo "------------------------------------------------------------------"
+echo "___________________________________________________________________"
 echo ""
-echo "Controlling GPU cards"
+echo "${MENU}"Checking graphic cards"${END}"
 echo ""
 var=$( sudo lspci | grep -i nvidia | head -1 | awk '{print $8}' )
 ver=$( modinfo nvidia | grep -i version | head -1 | awk '{print $2}' )
@@ -85,13 +93,14 @@ if [ "$var" = "1c81" ]
 then
 if [ $ver = "375.20" ]
 then
+echo "Detected NVIDIA 1050"
 echo "${INTRO_TEXT}"Correct Nvidia version '(' $ver ')' already installed.."${END}"
 echo ""
 exit
 else
 echo "Driver for NVIDIA $ver is not installed but i detected a NVIDIA 1050 Hardware"
 echo ""
-echo "Installing driver.. Hold on"
+echo "${MENU}"Installing driver.. Hold on"${END}"
 echo ""
 sleep 2
 sudo service lightdm stop
@@ -110,6 +119,7 @@ if [ "$var"  = "1b81" ]
 then
 if [ $ver = "367.27" ]
 then
+echo "Detected NVIDIA 1070"
 echo "${INTRO_TEXT}"Correct Nvidia version '(' $ver ')' already installed.."${END}"
 echo ""
 exit
@@ -132,7 +142,7 @@ echo ""
 fi
 else
 echo ""
-sudo echo "${RED}"FAIL. No Nvidia card detected"${END}"
+sudo echo "${RED}"FAIL. No Nvidia 1050 or 1070 card detected"${END}"
 echo ""
 fi
 fi
