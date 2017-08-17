@@ -108,8 +108,8 @@ if [ $ver = "375.20" ]
 then
 echo "Detected NVIDIA 1050"
 echo "${INTRO_TEXT}"Correct Nvidia driver version '(' $ver ')' already installed.."${END}"
-read -p "Do you wish to reinstall 1050 driver?"
-case $yn in
+read -p "Do you wish to reinstall the 1050 driver (y/n)?" yn
+   case $yn in
     [Yy]* ) echo "${INTRO_TEXT}"Reinstalling Nvidia 1050"${END}"
 sudo service lightdm stop
 sudo wget http://10.46.21.53/NVIDIA-1050.run
@@ -144,9 +144,9 @@ if [ $ver = "367.27" ]
 then
 echo "Detected NVIDIA 1070"
 echo "${INTRO_TEXT}"Correct Nvidia driver version '(' $ver ')' already installed.."${END}"
-read -p "Do you wish to reinstall 1070 driver?"
+read -p "Do you wish to reinstall the 1050 driver (y/n)?" yn
 case $yn in
-    [Yy]* ) echo "${INTRO_TEXT}"Reinstalling Nvidia 1050"${END}"
+    [Yy]* ) echo "${INTRO_TEXT}"Reinstalling Nvidia 1070"${END}"
 sudo service lightdm stop
 sudo wget http://10.46.21.53/NVIDIA-1070.run
 sudo chmod +x NVIDIA-1070.run
