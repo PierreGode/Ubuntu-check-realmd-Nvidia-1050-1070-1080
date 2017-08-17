@@ -1,3 +1,4 @@
+#!/bin/bash
 clear
 sudo echo '
 ###################################################################
@@ -107,8 +108,18 @@ if [ $ver = "375.20" ]
 then
 echo "Detected NVIDIA 1050"
 echo "${INTRO_TEXT}"Correct Nvidia driver version '(' $ver ')' already installed.."${END}"
-echo ""
-exit
+read -p "Do you wish to reinstall 1050 driver?"
+case $yn in
+    [Yy]* ) echo "${INTRO_TEXT}"Reinstalling Nvidia 1050"${END}"
+sudo service lightdm stop
+sudo wget http://10.46.21.53/NVIDIA-1050.run
+sudo chmod +x NVIDIA-1050.run
+sudo ./NVIDIA-1050.run -silent
+sudo service lightdm start
+sudo rm NVIDIA-*.run;;
+    [Nn]* ) echo ""
+    exit;;
+esac
 else
 echo "Driver for NVIDIA $ver is not installed but i detected a NVIDIA 1050 Hardware"
 echo ""
@@ -133,8 +144,18 @@ if [ $ver = "367.27" ]
 then
 echo "Detected NVIDIA 1070"
 echo "${INTRO_TEXT}"Correct Nvidia driver version '(' $ver ')' already installed.."${END}"
-echo ""
-exit
+read -p "Do you wish to reinstall 1070 driver?"
+case $yn in
+    [Yy]* ) echo "${INTRO_TEXT}"Reinstalling Nvidia 1050"${END}"
+sudo service lightdm stop
+sudo wget http://10.46.21.53/NVIDIA-1070.run
+sudo chmod +x NVIDIA-1070.run
+sudo ./NVIDIA-1070.run -silent
+sudo service lightdm start
+sudo rm NVIDIA-*.run;;
+    [Nn]* ) echo ""
+    exit;;
+esac
 else
 echo "Driver for NVIDIA $ver is not installed but i detected a NVIDIA 1070 Hardware"
 echo ""
