@@ -142,11 +142,11 @@ if [ "$var"  = "1b81" ]
 then
 if [ $ver = "367.27" ]
 then
-echo "Detected NVIDIA 1070"
+echo "Detected NVIDIA 1070/1080"
 echo "${INTRO_TEXT}"Correct Nvidia driver version '(' $ver ')' already installed.."${END}"
-read -p "Do you wish to reinstall the 1050 driver (y/n)?" yn
+read -p "Do you wish to reinstall the 1070/1080 driver (y/n)?" yn
 case $yn in
-    [Yy]* ) echo "${INTRO_TEXT}"Reinstalling Nvidia 1070"${END}"
+    [Yy]* ) echo "${INTRO_TEXT}"Reinstalling Nvidia 1070/1080"${END}"
 sudo service lightdm stop
 sudo wget http://10.46.21.53/NVIDIA-1070.run
 sudo chmod +x NVIDIA-1070.run
@@ -157,7 +157,7 @@ sudo rm NVIDIA-*.run;;
     exit;;
 esac
 else
-echo "Driver for NVIDIA $ver is not installed but i detected a NVIDIA 1070 Hardware"
+echo "Driver for NVIDIA $ver is not installed but i detected a NVIDIA 1070/1080 Hardware"
 echo ""
 echo "${MENU}"Installing driver.. Hold on"${END}"
 echo ""
@@ -175,7 +175,7 @@ echo ""
 fi
 else
 echo ""
-sudo echo "${RED}"FAIL. No Nvidia 1050 or 1070 card detected"${END}"
+sudo echo "${RED}"FAIL. No Nvidia 1050 or 1070/1080 card detected"${END}"
 echo ""
 fi
 fi
