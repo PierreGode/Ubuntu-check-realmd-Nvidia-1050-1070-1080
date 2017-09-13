@@ -138,7 +138,7 @@ sudo echo "${INTRO_TEXT}"Current driver is '(' $ver ')' "${END}"
 echo ""
 fi
 else
-if [ "$var"  = "1b81" ]
+if [ "$var"  = "1b81" ] || [ "$var"  = "1B80" ]
 then
 if [ $ver = "367.27" ]
 then
