@@ -32,7 +32,7 @@ echo ""
 disk=$( df -Pm | awk '+$5 >=60  {print $1 " - " $5}' )
 space=$( df -Pm | awk '+$5 >=60  {print $5}' | cut -d '%' -f1 )
 totaldisk=$( df -h | awk '+$5 >=60  {print $1 " - " $2}' | cut -d '-' -f3 )
-if [ $space > 60 ]
+if [ "$space" > "60" ]
 then
 echo "I detected a space that seems to be getting full= $disk used of"$totaldisk""
 echo ""
