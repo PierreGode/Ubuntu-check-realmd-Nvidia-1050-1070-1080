@@ -127,7 +127,7 @@ echo "${MENU}"Installing driver.. Hold on"${END}"
 echo ""
 sleep 2
 sudo service lightdm stop
-sudo wget http://10.46.21.53/NVIDIA-1050.run
+sudo wget http://server/NVIDIA-1050.run
 sudo chmod +x NVIDIA-1050.run
 sudo ./NVIDIA-1050.run -silent
 sudo service lightdm start
@@ -148,7 +148,7 @@ read -p "Do you wish to reinstall the 1070/1080 driver (y/n)?" yn
 case $yn in
     [Yy]* ) echo "${INTRO_TEXT}"Reinstalling Nvidia 1070/1080"${END}"
 sudo service lightdm stop
-sudo wget http://10.46.21.53/NVIDIA-1070.run
+sudo wget http://server/NVIDIA-1070.run
 sudo chmod +x NVIDIA-1070.run
 sudo ./NVIDIA-1070.run -silent
 sudo service lightdm start
@@ -163,7 +163,7 @@ echo "${MENU}"Installing driver.. Hold on"${END}"
 echo ""
 sleep 2
 sudo service lightdm stop
-sudo wget http://10.46.21.53/NVIDIA-1070.run
+sudo wget http://server/NVIDIA-1070.run
 sudo chmod +x NVIDIA-1070.run
 sudo ./NVIDIA-1070.run -silent
 sudo service lightdm start
