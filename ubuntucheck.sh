@@ -1,9 +1,9 @@
 #!/bin/bash
 clear
 sudo echo '
-###################################################################
-# Tobii Ubuntu 16 realmd setup & Nvidia 1050/1070 check by Pierre #
-###################################################################'
+######################################################################################
+# Tobii Ubuntu 16 realmd setup check & Nvidia 1050/1070/1080 check/install by Pierre #
+######################################################################################'
 echo ""
 # ~~~~~~~~~~  Environment Setup ~~~~~~~~~~ #
     NORMAL=$(echo "\033[m")
@@ -16,9 +16,16 @@ echo ""
 echo ""
 echo "${MENU}"Checking kernel information"${END}"
 echo ""
-hostnamectl status
+hostnamectl status | sudo tee -a computerInfoOutput_${USER}.txt
 echo ""
 echo "___________________________________________________________________"
+echo ""
+echo ""
+echo ""
+echo "${MENU}"Checking Hardware information"${END}"
+echo ""
+sudo lshw -short | grep -E "(system|System Memory|processor)" | sudo tee -a computerInfoOutput_${USER}.txt
+lspci | grep VGA | sudo tee -a computerInfoOutput_${USER}.txt
 echo ""
 echo "${MENU}"Checking network"${END}"
 ifconfig | awk '{print $2}' | grep addr | head -1
@@ -29,10 +36,10 @@ echo ""
 echo ""
 echo "${MENU}"Checking disk space of disks"${END}"
 echo ""
-disk=$( df -Pm | awk '+$5 >=60  {print $1 " - " $5}' )
-space=$( df -Pm | awk '+$5 >=60  {print $5}' | cut -d '%' -f1 )
-totaldisk=$( df -h | awk '+$5 >=60  {print $1 " - " $2}' | cut -d '-' -f3 )
-if [ "$space" > "60" ]
+disk=$( df -Pm | awk '+$5 >=85  {print $1 " - " $5}' )
+space=$( df -Pm | awk '+$5 >=85  {print $5}' | cut -d '%' -f1 )
+totaldisk=$( df -h | awk '+$5 >=85  {print $1 " - " $2}' | cut -d '-' -f3 )
+if [ "$space" ">" "85" ]
 then
 echo "I detected a space that seems to be getting full= $disk used of"$totaldisk""
 echo ""
@@ -101,81 +108,47 @@ echo "${MENU}"Checking graphic cards"${END}"
 echo ""
 var=$( sudo lspci | grep -i nvidia | head -1 | awk '{print $8}' )
 ver=$( modinfo nvidia | grep -i version | head -1 | awk '{print $2}' )
-cd /
-if [ "$var" = "1c81" ]
+if [ "$var"  = "1b81" ] || [ "$var"  = "1b80" ] || [ "$var" = "1070" ] || [ "$var" = "1080" ] || [ "$var" = "1c81" ] || [ "$var" = "1050" ]
 then
-if [ $ver = "375.20" ]
+if [ "$ver" = "387.34" ]
 then
-echo "Detected NVIDIA 1050"
-echo "${INTRO_TEXT}"Correct Nvidia driver version '(' $ver ')' already installed.."${END}"
-read -p "Do you wish to reinstall the 1050 driver (y/n)?" yn
-   case $yn in
-    [Yy]* ) echo "${INTRO_TEXT}"Reinstalling Nvidia 1050"${END}"
-sudo service lightdm stop
-sudo wget http://10.46.21.53/NVIDIA-1050.run
-sudo chmod +x NVIDIA-1050.run
-sudo ./NVIDIA-1050.run -silent
-sudo service lightdm start
-sudo rm NVIDIA-*.run;;
-    [Nn]* ) echo ""
-    exit;;
-esac
-else
-echo "Driver for NVIDIA $ver is not installed but i detected a NVIDIA 1050 Hardware"
-echo ""
-echo "${MENU}"Installing driver.. Hold on"${END}"
-echo ""
-sleep 2
-sudo service lightdm stop
-sudo wget http://server/NVIDIA-1050.run
-sudo chmod +x NVIDIA-1050.run
-sudo ./NVIDIA-1050.run -silent
-sudo service lightdm start
-sudo rm NVIDIA-*.run
-echo ""
-sleep 3
-sudo echo "${INTRO_TEXT}"Current driver is '(' $ver ')' "${END}"
-echo ""
-fi
-else
-if [ "$var"  = "1b81" ] || [ "$var"  = "1b80" ]
-then
-if [ $ver = "367.27" ]
-then
-echo "Detected NVIDIA 1070/1080"
+echo "Detected NVIDIA 1050/1070/1080"
 echo "${INTRO_TEXT}"Correct Nvidia driver version '(' $ver ')' already installed.."${END}"
 read -p "Do you wish to reinstall the 1070/1080 driver (y/n)?" yn
 case $yn in
-    [Yy]* ) echo "${INTRO_TEXT}"Reinstalling Nvidia 1070/1080"${END}"
+    [Yy]* ) echo "${INTRO_TEXT}"Reinstalling Nvidia 1050/1070/1080"${END}"
 sudo service lightdm stop
-sudo wget http://server/NVIDIA-1070.run
-sudo chmod +x NVIDIA-1070.run
-sudo ./NVIDIA-1070.run -silent
+sudo apt-get purge xserver-xorg-video-nouveau -y
+sudo apt-get purge nvidia-*
+sudo wget http://us.download.nvidia.com/XFree86/Linux-x86_64/387.34/NVIDIA-Linux-x86_64-387.34.run
+sudo chmod +x NVIDIA-Linux-x86_64-387.34.run
+sudo ./NVIDIA-Linux-x86_64-387.34.run -silent
 sudo service lightdm start
-sudo rm NVIDIA-*.run;;
+sudo rm NVIDIA-Linux*.run;;
     [Nn]* ) echo ""
     exit;;
 esac
 else
-echo "Driver for NVIDIA $ver is not installed but i detected a NVIDIA 1070/1080 Hardware"
+echo "Driver for NVIDIA $ver is not installed but i detected a NVIDIA 1050/1070/1080 Hardware"
 echo ""
 echo "${MENU}"Installing driver.. Hold on"${END}"
 echo ""
 sleep 2
 sudo service lightdm stop
-sudo wget http://server/NVIDIA-1070.run
-sudo chmod +x NVIDIA-1070.run
-sudo ./NVIDIA-1070.run -silent
+sudo apt-get purge xserver-xorg-video-nouveau -y
+sudo apt-get purge nvidia-*
+sudo wget http://us.download.nvidia.com/XFree86/Linux-x86_64/387.34/NVIDIA-Linux-x86_64-387.34.run
+sudo chmod +x NVIDIA-Linux-x86_64-387.34.run
+sudo ./NVIDIA-Linux-x86_64-387.34.run -silent
 sudo service lightdm start
 sudo rm NVIDIA-*.run
 echo ""
+ver=$( modinfo nvidia | grep -i version | head -1 | awk '{print $2}' )
 sleep 3
 sudo echo "${INTRO_TEXT}"Current driver is '(' $ver ')' "${END}"
 echo ""
 fi
 else
 echo ""
-sudo echo "${RED}"FAIL. No Nvidia 1050 or 1070/1080 card detected"${END}"
-echo ""
-fi
+sudo echo "${RED}"FAIL. No Nvidia 1050,1070 or 1080 card detected"${END}"
 fi
